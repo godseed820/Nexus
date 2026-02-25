@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NexusFi - Create Account</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#00D4FF',
+                        secondary: '#7B61FF',
+                        dark: '#0A0E1A',
+                        darker: '#050811',
+                        surface: '#111827',
+                        success: '#10B981',
+                        danger: '#EF4444',
+                    },
+                    animation: {
+                        'gradient': 'gradient 8s linear infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        gradient: {
+                            '0%, 100%': { backgroundPosition: '0% 50%' },
+                            '50%': { backgroundPosition: '100% 50%' },
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #050811;
+            color: #E5E7EB;
+            min-height: 100vh;
+        }
+        .glass {
+            background: rgba(17, 24, 39, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .glass-strong {
+            background: rgba(17, 24, 39, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, #00D4FF 0%, #7B61FF 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .glow-hover:hover {
+            box-shadow: 0 0 30px rgba(0, 212, 255, 0.3);
+        }
+        .bg-grid {
+            background-image: 
+                linear-gradient(rgba(0, 212, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 212, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+        .floating-shape {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.4;
+            animation: float 6s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-20px) scale(1.05); }
+        }
+        .input-field {
+            background: rgba(17, 24, 39, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        .input-field:focus {
+            border-color: #00D4FF;
+            box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1);
+        }
+        .step-indicator {
+            transition: all 0.3s ease;
+        }
+        .step-active {
+            background: linear-gradient(135deg, #00D4FF, #7B61FF);
+            color: white;
+        }
+        .step-completed {
+            background: #10B981;
+            color: white;
+        }
+        .password-strength {
+            height: 4px;
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+<body class="bg-grid relative overflow-hidden">
+    <!-- Background Effects -->
+    <div class="floating-shape w-96 h-96 bg-secondary/20 -top-48 -right-48"></div>
+    <div class="floating-shape w-80 h-80 bg-primary/20 bottom-0 left-0 animation-delay-2000"></div>
+    
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 glass border-b border-gray-800/50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <a href="index.html" class="flex items-center space-x-2">
+                    <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
+                        <i class="fas fa-cube text-white text-sm"></i>
+                    </div>
+                    <span class="font-display font-bold text-xl tracking-tight">Nexus<span class="gradient-text">Fi</span></span>
+                </a>
+                <div class="flex items-center space-x-4">
+                    <span class="text-gray-400 text-sm">Already have an account?</span>
+                    <a href="index.html" class="border border-gray-700 hover:border-primary text-gray-300 hover:text-white px-4 py-2 rounded-lg text-sm font-medium transition-all">
+                        Sign In
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="pt-24 pb-12 px-4 sm:px-6 lg:px-8 min-h-screen flex items-center justify-center">
+        <div class="w-full max-w-2xl">
+            <!-- Registration Card -->
+            <div class="glass-strong rounded-2xl p-8 border border-gray-700 shadow-2xl relative overflow-hidden">
+                <!-- Glow Effect -->
+                <div class="absolute top-0 left-1/2 transform -translate-x-1/2 w-64 h-64 bg-secondary/10 rounded-full blur-3xl -translate-y-1/2 pointer-events-none"></div>
+                
+                <div class="relative z-10">
+                    <div class="text-center mb-8">
+                        <h1 class="font-display text-3xl font-bold text-white mb-2">Create Your Account</h1>
+                        <p class="text-gray-400 text-sm">Start your crypto investment journey today</p>
+                    </div>
+
+                    <!-- Step Indicator -->
+                    <div class="flex justify-center mb-8">
+                        <div class="flex items-center gap-4">
+                            <div class="step-indicator step-active w-10 h-10 rounded-full flex items-center justify-center font-semibold text-sm" id="step-1-indicator">1</div>
+                            <div class="w-16 h-1 bg-gray-700 rounded-full overflow-hidden">
+                                <div class="h-full bg-gradient-to-r from-primary to-secondary transition-all duration-500" id="progress-bar" style="width: 0%"></div>
+                            </div>
+                            <div class="step-indicator w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center font-semibold text-sm text-gray-400" id="step-2-indicator">2</div>
+                            <div class="w-16 h-1 bg-gray-700 rounded-full"></div>
+                            <div class="step-indicator w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center font-semibold text-sm text-gray-400" id="step-3-indicator">3</div>
+                        </div>
+                    </div>
+
+                    <form id="register-form" onsubmit="handleRegister(event)">
+                        <!-- Step 1: Personal Info -->
+                        <div id="step-1" class="space-y-6">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm text-gray-400 mb-2">First Name</label>
+                                    <input type="text" id="reg-firstname" required
+                                        class="input-field w-full rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none"
+                                        placeholder="John">
+                                </div>
+                                <div>
+                                    <label class="block text-sm text-gray-400 mb-2">Last Name</label>
+                                    <input type="text" id="reg-lastname" required
+                                        class="input-field w-full rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none"
+                                        placeholder="Doe">
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm text-gray-400 mb-2">Email Address</label>
+                                <div class="relative">
+                                    <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+                                        <i class="fas fa-envelope"></i>
+                                    </span>
+                                    <input type="email" id="reg-email" required
+                                        class="input-field w-full rounded-lg pl-10 pr-4 py-3 text-white placeholder-gray-500 focus:outline-none"
+                                        placeholder="name@example.com">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm text-gray-400 mb-2">Phone Number</label>
+                                <div class="relative">
+                                    <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+                                        <i class="fas fa-phone"></i>
+                                    </span>
+                                    <input type="tel" id="reg-phone"
+                                        class="input-field w-full rounded-lg pl-10 pr-4 py-3 text-white placeholder-gray-500 focus:outline-none"
+                                        placeholder="+1 (555) 000-0000">
+                                </div>
+                            </div>
+
+                            <button type="button" onclick="nextStep(2)" 
+                                class="w-full bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-white font-semibold py-3 rounded-lg transition-all glow-hover">
+                                Continue <i class="fas fa-arrow-right ml-2"></i>
+                            </button>
+                        </div>
+
+                        <!-- Step 2: Security -->
+                        <div id="step-2" class="space-y-6 hidden">
+                            <div>
+                                <label class="block text-sm text-gray-400 mb-2">Password</label>
+                                <div class="relative">
+                                    <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+                                        <i class="fas fa-lock"></i>
+                                    </span>
+                                    <input type="password" id="reg-password" required oninput="checkPasswordStrength()"
+                                        class="input-field w-full rounded-lg pl-10 pr-12 py-3 text-white placeholder-gray-500 focus:outline-none"
+                                        placeholder="••••••••">
+                                    <button type="button" onclick="togglePassword('reg-password', this)" 
+                                        class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-white transition-colors">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                                <!-- Password Strength -->
+                                <div class="mt-2 flex gap-1">
+                                    <div class="flex-1 password-strength bg-gray-700" id="strength-1"></div>
+                                    <div class="flex-1 password-strength bg-gray-700" id="strength-2"></div>
+                                    <div class="flex-1 password-strength bg-gray-700" id="strength-3"></div>
+                                    <div class="flex-1 password-strength bg-gray-700" id="strength-4"></div>
+                                </div>
+                                <p class="text-xs text-gray-500 mt-1" id="password-hint">Use 8+ characters with mixed case, numbers & symbols</p>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm text-gray-400 mb-2">Confirm Password</label>
+                                <div class="relative">
+                                    <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+                                        <i class="fas fa-lock"></i>
+                                    </span>
+                                    <input type="password" id="reg-confirm-password" required
+                                        class="input-field w-full rounded-lg pl-10 pr-4 py-3 text-white placeholder-gray-500 focus:outline-none"
+                                        placeholder="••••••••">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm text-gray-400 mb-2">Referral Code (Optional)</label>
+                                <div class="relative">
+                                    <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+                                        <i class="fas fa-gift"></i>
+                                    </span>
+                                    <input type="text" id="reg-referral"
+                                        class="input-field w-full rounded-lg pl-10 pr-4 py-3 text-white placeholder-gray-500 focus:outline-none"
+                                        placeholder="Enter code">
+                                </div>
+                            </div>
+
+                            <div class="flex gap-4">
+                                <button type="button" onclick="prevStep(1)" 
+                                    class="flex-1 border border-gray-700 hover:bg-gray-800 text-gray-300 font-semibold py-3 rounded-lg transition-all">
+                                    Back
+                                </button>
+                                <button type="button" onclick="nextStep(3)" 
+                                    class="flex-1 bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-white font-semibold py-3 rounded-lg transition-all glow-hover">
+                                    Continue <i class="fas fa-arrow-right ml-2"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Step 3: Verification -->
+                        <div id="step-3" class="space-y-6 hidden">
+                            <div class="p-4 rounded-lg bg-blue-500/10 border border-blue-500/20">
+                                <div class="flex items-start gap-3">
+                                    <i class="fas fa-info-circle text-blue-400 mt-0.5"></i>
+                                    <div>
+                                        <p class="text-sm text-blue-200 font-medium">Verify your email</p>
+                                        <p class="text-xs text-blue-300 mt-1">We'll send a verification code to your email address.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center gap-3 p-4 rounded-lg bg-gray-800/50 border border-gray-700">
+                                <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+                                    <i class="fas fa-envelope text-primary"></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-400">Email</p>
+                                    <p class="font-medium" id="verify-email-display">-</p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start gap-3 p-4 rounded-lg bg-gray-800/30 border border-gray-700">
+                                <input type="checkbox" id="terms-agree" required class="w-5 h-5 rounded border-gray-600 bg-gray-800 text-primary focus:ring-primary mt-0.5">
+                                <label for="terms-agree" class="text-sm text-gray-400">
+                                    I agree to the <a href="#" class="text-primary hover:underline">Terms of Service</a> and <a href="#" class="text-primary hover:underline">Privacy Policy</a>. I confirm that I am at least 18 years old.
+                                </label>
+                            </div>
+
+                            <div class="flex items-start gap-3 p-4 rounded-lg bg-gray-800/30 border border-gray-700">
+                                <input type="checkbox" id="marketing-consent" class="w-5 h-5 rounded border-gray-600 bg-gray-800 text-primary focus:ring-primary mt-0.5">
+                                <label for="marketing-consent" class="text-sm text-gray-400">
+                                    I want to receive marketing communications about new features, promotions, and market insights.
+                                </label>
+                            </div>
+
+                            <div class="flex gap-4">
+                                <button type="button" onclick="prevStep(2)" 
+                                    class="flex-1 border border-gray-700 hover:bg-gray-800 text-gray-300 font-semibold py-3 rounded-lg transition-all">
+                                    Back
+                                </button>
+                                <button type="submit" 
+                                    class="flex-1 bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-white font-semibold py-3 rounded-lg transition-all glow-hover flex justify-center items-center gap-2">
+                                    <i class="fas fa-user-plus"></i>
+                                    Create Account
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+
+                    <!-- Divider -->
+                    <div class="relative my-6">
+                        <div class="absolute inset-0 flex items-center">
+                            <div class="w-full border-t border-gray-700"></div>
+                        </div>
+                        <div class="relative flex justify-center text-sm">
+                            <span class="px-2 bg-gray-900 text-gray-500">Or sign up with</span>
+                        </div>
+                    </div>
+
+                    <!-- Social Login -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <button onclick="socialLogin('google')" 
+                            class="flex items-center justify-center gap-2 py-2.5 rounded-lg border border-gray-700 hover:bg-gray-800 transition-all text-sm">
+                            <i class="fab fa-google text-red-500"></i>
+                            Google
+                        </button>
+                        <button onclick="socialLogin('metamask')" 
+                            class="flex items-center justify-center gap-2 py-2.5 rounded-lg border border-gray-700 hover:bg-gray-800 transition-all text-sm">
+                            <i class="fas fa-wallet text-orange-500"></i>
+                            MetaMask
+                        </button>
+                    </div>
+
+                    <!-- Login Link -->
+                    <p class="mt-6 text-center text-sm text-gray-400">
+                        Already have an account? 
+                        <a href="index.html" class="text-primary hover:underline font-medium">Sign in</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-4 right-4 transform translate-y-20 opacity-0 transition-all duration-300 z-[110]">
+        <div class="glass-strong rounded-lg px-6 py-4 border border-gray-700 shadow-2xl flex items-center gap-3">
+            <div id="toast-icon" class="w-8 h-8 rounded-full bg-success/20 text-success flex items-center justify-center">
+                <i class="fas fa-check"></i>
+            </div>
+            <div>
+                <h4 id="toast-title" class="font-semibold text-sm text-white">Success</h4>
+                <p id="toast-message" class="text-xs text-gray-400">Operation completed successfully</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="auth.js"></script>
+</body>
+</html>
