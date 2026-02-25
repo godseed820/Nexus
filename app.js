@@ -16,12 +16,12 @@ const state = {
     investments: currentUser?.portfolio?.investments || [],
     transactions: currentUser?.portfolio?.transactions || [],
     cryptoPrices: {
-        BTC: { price: 43250.00, change: 2.4, icon: 'fab fa-bitcoin', color: 'text-orange-500' },
-        ETH: { price: 2280.50, change: -1.2, icon: 'fab fa-ethereum', color: 'text-purple-500' },
-        SOL: { price: 98.75, change: 5.7, icon: 'fas fa-sun', color: 'text-teal-400' },
-        ADA: { price: 0.58, change: -0.5, icon: 'fas fa-circle', color: 'text-blue-500' },
+        BTC: { price: 6622.00, change: 2.4, icon: 'fab fa-bitcoin', color: 'text-orange-500' },
+        ETH: { price: 1973.80, change: -1.2, icon: 'fab fa-ethereum', color: 'text-purple-500' },
+        SOL: { price: 84.671, change: 5.7, icon: 'fas fa-sun', color: 'text-teal-400' },
+        ADA: { price: 0.28472, change: -0.5, icon: 'fas fa-circle', color: 'text-blue-500' },
         DOT: { price: 7.25, change: 3.2, icon: 'fas fa-dot-circle', color: 'text-pink-500' },
-        LINK: { price: 14.80, change: 1.8, icon: 'fas fa-link', color: 'text-blue-400' }
+        LINK: { price: 9.0542, change: 1.8, icon: 'fas fa-link', color: 'text-blue-400' }
     }
 };
 
