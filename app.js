@@ -16,7 +16,7 @@ const state = {
     investments: currentUser?.portfolio?.investments || [],
     transactions: currentUser?.portfolio?.transactions || [],
     cryptoPrices: {
-        BTC: { price: 6622.00, change: 2.4, icon: 'fab fa-bitcoin', color: 'text-orange-500' },
+        BTC: { price: 66966.97, change: 2.4, icon: 'fab fa-bitcoin', color: 'text-orange-500' },
         ETH: { price: 1973.80, change: -1.2, icon: 'fab fa-ethereum', color: 'text-purple-500' },
         SOL: { price: 84.671, change: 5.7, icon: 'fas fa-sun', color: 'text-teal-400' },
         ADA: { price: 0.28472, change: -0.5, icon: 'fas fa-circle', color: 'text-blue-500' },
