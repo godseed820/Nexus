@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NexusFi - Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#00D4FF',
+                        secondary: '#7B61FF',
+                        dark: '#0A0E1A',
+                        darker: '#050811',
+                        surface: '#111827',
+                        success: '#10B981',
+                        danger: '#EF4444',
+                    },
+                    animation: {
+                        'gradient': 'gradient 8s linear infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        gradient: {
+                            '0%, 100%': { backgroundPosition: '0% 50%' },
+                            '50%': { backgroundPosition: '100% 50%' },
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #050811;
+            color: #E5E7EB;
+        }
+        .glass {
+            background: rgba(17, 24, 39, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .glass-strong {
+            background: rgba(17, 24, 39, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, #00D4FF 0%, #7B61FF 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .glow {
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.15);
+        }
+        .glow-hover:hover {
+            box-shadow: 0 0 30px rgba(0, 212, 255, 0.3);
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+        .crypto-icon {
+            filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.2));
+        }
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .modal-enter {
+            animation: modalEnter 0.3s ease-out;
+        }
+        @keyframes modalEnter {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .slide-in {
+            animation: slideIn 0.4s ease-out;
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        .address-input {
+            background-color: #0f131f;
+            border: 1px solid #374151;
+            color: #9CA3AF;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body class="antialiased overflow-x-hidden">
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 glass border-b border-gray-800/50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-2 cursor-pointer" onclick="showDashboard()">
+                    <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
+                        <i class="fas fa-cube text-white text-sm"></i>
+                    </div>
+                    <span class="font-display font-bold text-xl tracking-tight">Nexus<span class="gradient-text">Fi</span></span>
+                </div>
+                
+                <div class="hidden md:flex items-center space-x-8">
+                    <button onclick="showDashboard()" class="nav-link text-gray-300 hover:text-white transition-colors text-sm font-medium">Dashboard</button>
+                    <button onclick="showMarkets()" class="nav-link text-gray-300 hover:text-white transition-colors text-sm font-medium">Markets</button>
+                    <button onclick="showPortfolio()" class="nav-link text-gray-300 hover:text-white transition-colors text-sm font-medium">Portfolio</button>
+                    <button onclick="showHistory()" class="nav-link text-gray-300 hover:text-white transition-colors text-sm font-medium">History</button>
+                </div>
+
+                <div class="flex items-center space-x-4">
+                    <!-- User Menu -->
+                    <div class="hidden md:flex items-center space-x-2 px-3 py-1.5 rounded-full bg-gray-800/50 border border-gray-700">
+                        <div class="w-2 h-2 rounded-full bg-success animate-pulse"></div>
+                        <span class="text-xs text-gray-400">Live</span>
+                    </div>
+                    
+                    <!-- User Dropdown -->
+                    <div class="relative" id="user-menu">
+                        <button onclick="toggleUserMenu()" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-800 transition-all">
+                            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
+                                <i class="fas fa-user text-white text-xs"></i>
+                            </div>
+                            <span class="hidden md:block text-sm text-gray-300" id="user-name">User</span>
+                            <i class="fas fa-chevron-down text-xs text-gray-500"></i>
+                        </button>
+                        
+                        <!-- Dropdown Menu -->
+                        <div id="user-dropdown" class="hidden absolute right-0 mt-2 w-48 glass-strong rounded-xl border border-gray-700 shadow-2xl py-2">
+                            <div class="px-4 py-2 border-b border-gray-800">
+                                <p class="text-sm font-medium text-white" id="dropdown-name">User Name</p>
+                                <p class="text-xs text-gray-400" id="dropdown-email">user@example.com</p>
+                            </div>
+                            <a href="#" onclick="showProfile()" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-800 hover:text-white transition-colors">
+                                <i class="fas fa-user-circle mr-2"></i>Profile
+                            </a>
+                            <a href="#" onclick="showSettings()" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-800 hover:text-white transition-colors">
+                                <i class="fas fa-cog mr-2"></i>Settings
+                            </a>
+                            <a href="#" onclick="showSecurity()" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-800 hover:text-white transition-colors">
+                                <i class="fas fa-shield-alt mr-2"></i>Security
+                            </a>
+                            <div class="border-t border-gray-800 mt-2 pt-2">
+                                <a href="#" onclick="handleLogout()" class="block px-4 py-2 text-sm text-danger hover:bg-danger/10 transition-colors">
+                                    <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button onclick="openDepositModal()" class="bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-all glow-hover">
+                        <i class="fas fa-plus mr-2"></i>Deposit
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="pt-20 pb-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        
+        <!-- Dashboard View -->
+        <div id="dashboard-view" class="space-y-6">
+            <!-- Welcome Section -->
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+                <div>
+                    <h1 class="font-display text-3xl font-bold text-white mb-1">Welcome back, <span class="gradient-text" id="welcome-name">Trader</span></h1>
+                    <p class="text-gray-400 text-sm">Here's your investment overview today</p>
+                </div>
+                <div class="flex gap-3">
+                    <button onclick="openWithdrawModal()" class="px-4 py-2 rounded-lg border border-gray-700 text-gray-300 hover:bg-gray-800 transition-all text-sm font-medium">
+                        <i class="fas fa-arrow-down mr-2"></i>Withdraw
+                    </button>
+                    <button onclick="openDepositModal()" class="px-4 py-2 rounded-lg bg-primary/10 border border-primary/50 text-primary hover:bg-primary/20 transition-all text-sm font-medium">
+                        <i class="fas fa-wallet mr-2"></i>Add Funds
+                    </button>
+                </div>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Total Balance -->
+                <div class="glass rounded-2xl p-6 glow-hover transition-all duration-300 relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full blur-3xl -mr-16 -mt-16 group-hover:bg-primary/20 transition-all"></div>
+                    <div class="relative z-10">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="p-2 rounded-lg bg-primary/10 text-primary">
+                                <i class="fas fa-wallet text-lg"></i>
+                            </div>
+                            <span class="text-xs text-success flex items-center bg-success/10 px-2 py-1 rounded-full">
+                                <i class="fas fa-arrow-up mr-1"></i>+12.5%
+                            </span>
+                        </div>
+                        <p class="text-gray-400 text-sm mb-1">Total Balance</p>
+                        <h3 class="text-2xl font-display font-bold text-white" id="total-balance">$0.00</h3>
+                        <p class="text-xs text-gray-500 mt-2">Available for investment</p>
+                    </div>
+                </div>
+
+                <!-- Portfolio Value -->
+                <div class="glass rounded-2xl p-6 glow-hover transition-all duration-300 relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-secondary/10 rounded-full blur-3xl -mr-16 -mt-16 group-hover:bg-secondary/20 transition-all"></div>
+                    <div class="relative z-10">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="p-2 rounded-lg bg-secondary/10 text-secondary">
+                                <i class="fas fa-chart-pie text-lg"></i>
+                            </div>
+                            <span class="text-xs text-success flex items-center bg-success/10 px-2 py-1 rounded-full">
+                                <i class="fas fa-arrow-up mr-1"></i>+8.2%
+                            </span>
+                        </div>
+                        <p class="text-gray-400 text-sm mb-1">Portfolio Value</p>
+                        <h3 class="text-2xl font-display font-bold text-white" id="portfolio-value">$0.00</h3>
+                        <p class="text-xs text-gray-500 mt-2">Current investments</p>
+                    </div>
+                </div>
+
+                <!-- Total Profit -->
+                <div class="glass rounded-2xl p-6 glow-hover transition-all duration-300 relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-success/10 rounded-full blur-3xl -mr-16 -mt-16 group-hover:bg-success/20 transition-all"></div>
+                    <div class="relative z-10">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="p-2 rounded-lg bg-success/10 text-success">
+                                <i class="fas fa-coins text-lg"></i>
+                            </div>
+                            <span class="text-xs text-success flex items-center bg-success/10 px-2 py-1 rounded-full">
+                                <i class="fas fa-arrow-up mr-1"></i>+24.3%
+                            </span>
+                        </div>
+                        <p class="text-gray-400 text-sm mb-1">Total Profit</p>
+                        <h3 class="text-2xl font-display font-bold text-success" id="total-profit">$0.00</h3>
+                        <p class="text-xs text-gray-500 mt-2">All time earnings</p>
+                    </div>
+                </div>
+
+                <!-- Active Investments -->
+                <div class="glass rounded-2xl p-6 glow-hover transition-all duration-300 relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-orange-500/10 rounded-full blur-3xl -mr-16 -mt-16 group-hover:bg-orange-500/20 transition-all"></div>
+                    <div class="relative z-10">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="p-2 rounded-lg bg-orange-500/10 text-orange-500">
+                                <i class="fas fa-layer-group text-lg"></i>
+                            </div>
+                            <span class="text-xs text-gray-400 bg-gray-800 px-2 py-1 rounded-full">Active</span>
+                        </div>
+                        <p class="text-gray-400 text-sm mb-1">Active Positions</p>
+                        <h3 class="text-2xl font-display font-bold text-white" id="active-positions">0</h3>
+                        <p class="text-xs text-gray-500 mt-2">Open investments</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Section -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8">
+                <!-- Main Chart -->
+                <div class="lg:col-span-2 glass rounded-2xl p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="font-display font-semibold text-lg">Portfolio Performance</h3>
+                        <div class="flex space-x-2">
+                            <button onclick="updateTimeframe('1D')" class="timeframe-btn px-3 py-1 rounded-lg text-xs font-medium bg-primary/20 text-primary transition-all" data-timeframe="1D">1D</button>
+                            <button onclick="updateTimeframe('1W')" class="timeframe-btn px-3 py-1 rounded-lg text-xs font-medium text-gray-400 hover:text-white transition-all" data-timeframe="1W">1W</button>
+                            <button onclick="updateTimeframe('1M')" class="timeframe-btn px-3 py-1 rounded-lg text-xs font-medium text-gray-400 hover:text-white transition-all" data-timeframe="1M">1M</button>
+                            <button onclick="updateTimeframe('1Y')" class="timeframe-btn px-3 py-1 rounded-lg text-xs font-medium text-gray-400 hover:text-white transition-all" data-timeframe="1Y">1Y</button>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="portfolioChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Asset Allocation -->
+                <div class="glass rounded-2xl p-6">
+                    <h3 class="font-display font-semibold text-lg mb-6">Asset Allocation</h3>
+                    <div class="chart-container" style="height: 200px;">
+                        <canvas id="allocationChart"></canvas>
+                    </div>
+                    <div class="mt-6 space-y-3" id="allocation-legend">
+                        <!-- Dynamic legend items -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Investment Opportunities -->
+            <div class="mt-8">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="font-display font-semibold text-xl">Investment Opportunities</h3>
+                    <button onclick="showMarkets()" class="text-primary text-sm hover:underline">View All Markets <i class="fas fa-arrow-right ml-1"></i></button>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="investment-cards">
+                    <!-- Dynamic investment cards -->
+                </div>
+            </div>
+
+            <!-- Recent Transactions -->
+            <div class="mt-8 glass rounded-2xl p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="font-display font-semibold text-lg">Recent Transactions</h3>
+                    <button onclick="showHistory()" class="text-gray-400 hover:text-white text-sm transition-colors">View All</button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="text-left text-gray-400 text-xs uppercase tracking-wider border-b border-gray-800">
+                                <th class="pb-3 font-medium">Asset</th>
+                                <th class="pb-3 font-medium">Type</th>
+                                <th class="pb-3 font-medium">Amount</th>
+                                <th class="pb-3 font-medium">Status</th>
+                                <th class="pb-3 font-medium">Time</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transactions-table" class="text-sm">
+                            <!-- Dynamic transactions -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Markets View (Hidden by default) -->
+        <div id="markets-view" class="hidden space-y-6 slide-in">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="font-display text-2xl font-bold">Markets</h2>
+                <div class="flex gap-2">
+                    <input type="text" placeholder="Search assets..." class="bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-primary w-64">
+                </div>
+            </div>
+            
+            <div class="glass rounded-2xl overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gray-800/50">
+                            <tr class="text-left text-gray-400 text-xs uppercase tracking-wider">
+                                <th class="p-4 font-medium">Asset</th>
+                                <th class="p-4 font-medium">Price</th>
+                                <th class="p-4 font-medium">24h Change</th>
+                                <th class="p-4 font-medium">Market Cap</th>
+                                <th class="p-4 font-medium">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="markets-table" class="divide-y divide-gray-800">
+                            <!-- Dynamic market data -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Portfolio View (Hidden by default) -->
+        <div id="portfolio-view" class="hidden space-y-6 slide-in">
+            <h2 class="font-display text-2xl font-bold mb-6">Your Portfolio</h2>
+            <div id="portfolio-holdings" class="space-y-4">
+                <!-- Dynamic portfolio holdings -->
+            </div>
+        </div>
+
+        <!-- History View (Hidden by default) -->
+        <div id="history-view" class="hidden space-y-6 slide-in">
+            <h2 class="font-display text-2xl font-bold mb-6">Transaction History</h2>
+            <div class="glass rounded-2xl p-6">
+                <div class="space-y-4" id="full-history">
+                    <!-- Dynamic full history -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Deposit Modal -->
+    <div id="deposit-modal" class="fixed inset-0 z-[100] hidden">
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="closeDepositModal()"></div>
+        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-md modal-enter">
+            <div class="glass-strong rounded-2xl p-6 border border-gray-700 shadow-2xl">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="font-display text-xl font-bold">Deposit Funds</h3>
+                    <button onclick="closeDepositModal()" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <div class="space-y-6">
+                    <!-- Info Alert -->
+                    <div class="p-3 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-start gap-3">
+                        <i class="fas fa-info-circle text-blue-400 mt-0.5"></i>
+                        <p class="text-xs text-blue-200">Send only USDT (ERC20) to this address. Minimum deposit: $50.</p>
+                    </div>
+
+                    <!-- Wallet Address Section -->
+                    <div>
+                        <label>How much do you want to deposit?</label>
+                        <input type="number" id="deposit-amount" placeholder="Enter amount in USD" class="w-full rounded-lg pl-4 pr-12 py-3 text-sm focus:outline-none focus:border-primary transition-colors bg-gray-800 border border-gray-700">
+                        <label class="block text-sm text-gray-400 mb-2">Wallet Address (ERC20)</label>
+                        <div class="relative group">
+                            <input type="text" id="wallet-address" readonly 
+                                value="0xdce4801769fb20df54bf248fb25756bd0f3f32e7" 
+                                class="w-full address-input rounded-lg pl-4 pr-12 py-3 text-sm focus:outline-none focus:border-primary transition-colors truncate">
+                            <button onclick="copyAddress()" class="absolute right-2 top-1/2 transform -translate-y-1/2 p-2 text-gray-400 hover:text-white transition-colors" title="Copy Address">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <p id="copy-feedback" class="text-xs text-success mt-2 h-4 opacity-0 transition-opacity">Address copied to clipboard!</p>
+                    </div>
+
+                    <!-- Network Info -->
+                    <div class="flex justify-between items-center p-3 rounded-lg bg-gray-800/50 border border-gray-700">
+                        <span class="text-sm text-gray-400">Network</span>
+                        <span class="text-sm font-semibold text-white flex items-center gap-2">
+                            <i class="fab fa-ethereum text-gray-400"></i> ERC20 (Ethereum)
+                        </span>
+                    </div>
+
+                    <!-- Confirmation Button -->
+                    <button onclick="processDeposit()" class="w-full bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-white font-semibold py-3 rounded-lg transition-all glow-hover flex justify-center items-center gap-2">
+                        <i class="fas fa-check-circle"></i> I have made the payment
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Invest Modal -->
+    <div id="invest-modal" class="fixed inset-0 z-[100] hidden">
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="closeInvestModal()"></div>
+        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-md modal-enter">
+            <div class="glass-strong rounded-2xl p-6 border border-gray-700 shadow-2xl">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="font-display text-xl font-bold">Invest in <span id="invest-asset-name">Asset</span></h3>
+                    <button onclick="closeInvestModal()" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <div class="space-y-4">
+                    <div class="p-4 rounded-lg bg-gray-800/30 border border-gray-700">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-gray-400 text-sm">Current Price</span>
+                            <span class="text-white font-semibold" id="invest-price">$0.00</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-400 text-sm">24h Change</span>
+                            <span class="text-success text-sm" id="invest-change">+0.00%</span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-2">Investment Amount (USD)</label>
+                        <div class="relative">
+                            <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">$</span>
+                            <input type="number" id="invest-amount" class="w-full bg-gray-800 border border-gray-700 rounded-lg pl-8 pr-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-primary transition-colors" placeholder="0.00">
+                        </div>
+                        <div class="flex gap-2 mt-2">
+                            <button onclick="setInvestAmount(25)" class="flex-1 py-1 text-xs rounded bg-gray-800 hover:bg-gray-700 text-gray-400 transition-colors">25%</button>
+                            <button onclick="setInvestAmount(50)" class="flex-1 py-1 text-xs rounded bg-gray-800 hover:bg-gray-700 text-gray-400 transition-colors">50%</button>
+                            <button onclick="setInvestAmount(75)" class="flex-1 py-1 text-xs rounded bg-gray-800 hover:bg-gray-700 text-gray-400 transition-colors">75%</button>
+                            <button onclick="setInvestAmount(100)" class="flex-1 py-1 text-xs rounded bg-gray-800 hover:bg-gray-700 text-gray-400 transition-colors">Max</button>
+                        </div>
+                    </div>
+
+                    <div class="p-4 rounded-lg bg-gray-800/50 border border-gray-700">
+                        <div class="flex justify-between text-sm mb-2">
+                            <span class="text-gray-400">Available Balance</span>
+                            <span class="text-white" id="invest-available">$0.00</span>
+                        </div>
+                        <div class="flex justify-between text-sm font-semibold">
+                            <span class="text-gray-400">You will receive</span>
+                            <span class="text-primary" id="invest-receive">0.00000000</span>
+                        </div>
+                    </div>
+
+                    <button onclick="processInvestment()" class="w-full bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-white font-semibold py-3 rounded-lg transition-all glow-hover">
+                        Confirm Investment
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Withdraw Modal -->
+    <div id="withdraw-modal" class="fixed inset-0 z-[100] hidden">
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="closeWithdrawModal()"></div>
+        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-md modal-enter">
+            <div class="glass-strong rounded-2xl p-6 border border-gray-700 shadow-2xl">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="font-display text-xl font-bold">Withdraw Funds</h3>
+                    <button onclick="closeWithdrawModal()" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-2">Amount (USD)</label>
+                        <div class="relative">
+                            <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">$</span>
+                            <input type="number" id="withdraw-amount" class="w-full bg-gray-800 border border-gray-700 rounded-lg pl-8 pr-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-primary transition-colors" placeholder="0.00">
+                        </div>
+                        <div class="flex justify-between mt-2 text-xs text-gray-500">
+                            <span>Available: <span id="withdraw-available">$0.00</span></span>
+                            <span>Min: $50</span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-2">Withdrawal Address</label>
+                        <input type="text" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-primary transition-colors" placeholder="Enter wallet address">
+                    </div>
+
+                    <button onclick="processWithdrawal()" class="w-full bg-gradient-to-r from-danger to-red-600 hover:opacity-90 text-white font-semibold py-3 rounded-lg transition-all">
+                        Confirm Withdrawal
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-4 right-4 transform translate-y-20 opacity-0 transition-all duration-300 z-[110]">
+        <div class="glass-strong rounded-lg px-6 py-4 border border-gray-700 shadow-2xl flex items-center gap-3">
+            <div id="toast-icon" class="w-8 h-8 rounded-full bg-success/20 text-success flex items-center justify-center">
+                <i class="fas fa-check"></i>
+            </div>
+            <div>
+                <h4 id="toast-title" class="font-semibold text-sm text-white">Success</h4>
+                <p id="toast-message" class="text-xs text-gray-400">Operation completed successfully</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="auth.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
